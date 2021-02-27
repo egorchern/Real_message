@@ -52,12 +52,55 @@ html, body{
 
 .conversation_container{
     width: var(--conversation_container_width);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    padding-top: 4px;
+    padding-bottom: 4px;
 }
 
 .message_metadata{
     display: flex;
     flex-flow: row wrap;
     margin-left: 4px;
+}
+
+.messages_container{
+    overflow: auto;
+    height: 90%;
+}
+
+.new_message_container.focused{
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075), 0 0 2px 2px hsla(214, 100%, 55%, 60%);
+    border: 1px solid hsla(214, 100%, 55%, 60%);
+}
+
+.new_message_container{
+    
+    padding:9px;
+    border-radius: 12px;
+    
+    border: 1px solid hsl(0, 0%, 80%);
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+    margin: 18px;
+    flex-grow: 1;
+    background-color: white;
+    textarea{
+        width: 100%;
+        
+        border: none;
+        background-image: none;
+        background-color: transparent;
+        -webkit-box-shadow: none;
+        -moz-box-shadow: none;
+        box-shadow: none;
+        text-align: initial;
+        
+        resize: none;
+    }
+    textarea:focus{
+        outline: none;
+    }
 }
 
 .message_username{
@@ -76,6 +119,7 @@ html, body{
     display: inline-block;
     padding: 9px;
     border-radius: 12px;
+    border: 0.25px solid hsl(0, 0%, 80%);
     /*border: 2px solid #DFE1E6;*/
     box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important;
 }
