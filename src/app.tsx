@@ -1,6 +1,8 @@
 import * as React from "react";
 import {render} from "react-dom";
 let root = document.querySelector("#root");
+let origin = location.origin;
+let socket = io.connect();
 
 
 class Message extends React.Component {
@@ -70,12 +72,11 @@ class Conversation_container extends React.Component {
   markup: any;
   constructor(props) {
     super(props);
-    this.messages = this.props.messages;
-    this.markup = this.messages.map((message, index) => {
-      return <Message message={message} key={index}></Message>;
-    });
   }
   render() {
+    this.markup = this.props.messages.map((message, index) => {
+      return <Message message={message} key={index}></Message>;
+    });
     return (
       <div className="conversation_container">
         <div className="messages_container">{this.markup}</div>
@@ -90,32 +91,26 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      should_display_conversation: true
+      should_display_conversation: true,
+      messages: []
     }
   }
+  componentDidMount(){
+    socket.on("all_messages", data => {
+      console.log(data);
+      this.setState({
+        messages: JSON.parse(data)
+      })
+      
+    })
+  }
   render() {
-    let messages = [
-      {
-        time: "23:55:23",
-        username: "Vladiak",
-        message_text: "Hello world",
-      },
-      {
-        time: "12:06:12",
-        username: "Egorcik",
-        message_text: "I am the best jhin in EU",
-      },
-      {
-        time: "12:06:12",
-        username: "Миа бойка",
-        message_text: "Лети лети лепесток, через запад на восток",
-      }
-    ];
+    
     return (
       <div className="app_container flex_direction_column">
         {
           this.state.should_display_conversation === true ? 
-          <Conversation_container messages={messages}></Conversation_container>
+          <Conversation_container messages={this.state.messages}></Conversation_container>
           :null
         }
       </div>
