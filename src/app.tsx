@@ -105,6 +105,11 @@ class App extends React.Component {
         username: "Egorcik",
         message_text: "I am the best jhin in EU",
       },
+      {
+        time: "12:06:12",
+        username: "Миа бойка",
+        message_text: "Лети лети лепесток, через запад на восток",
+      }
     ];
     return (
       <div className="app_container flex_direction_column">
