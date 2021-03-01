@@ -25,11 +25,6 @@ let messages = [
         time: "12:06:12",
         username: "Миа бойка",
         message_text: "Лети лети лепесток, через запад на восток",
-    },
-    {
-        time: "12:06:12",
-        username: "Nikitka",
-        message_text: "Я худший"
     }
 ]
 app.get("/", (req, res) => {
@@ -38,8 +33,21 @@ app.get("/", (req, res) => {
 io.on("connection", socket => {
     let json_messages = JSON.stringify(messages);
     socket.emit("all_messages", json_messages);
-    
+    socket.on("send_new_message", data => {
+        let parsed = JSON.parse(data);
+        let username = parsed.username;
+        let time = parsed.time;
+        let message_text = parsed.message_text;
+        let new_message = {
+            username: username,
+            time: time,
+            message_text: message_text
+        }
+        messages.push(new_message);
+        io.emit("new_message", JSON.stringify(new_message))
+    })
 })
+
 
 server.listen(port);
 console.log(`Listening on port: ${port}`);

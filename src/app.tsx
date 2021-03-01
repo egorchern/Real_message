@@ -1,5 +1,6 @@
 import * as React from "react";
 import {render} from "react-dom";
+import { io } from "socket.io/client-dist/socket.io";
 let root = document.querySelector("#root");
 let origin = location.origin;
 let socket = io.connect();
@@ -72,17 +73,37 @@ class Conversation_container extends React.Component {
   markup: any;
   constructor(props) {
     super(props);
-  }
-  render() {
     this.markup = this.props.messages.map((message, index) => {
       return <Message message={message} key={index}></Message>;
     });
+  }
+  scroll_into_view(){
+    let elem = document.querySelector(".messages_container");
+    elem.scrollTo(0, elem.scrollHeight);
+  }
+  componentDidUpdate(){
+    this.scroll_into_view();
+  }
+  componentDidMount(){
+    this.scroll_into_view();
+  }
+  render() {
+    if(this.props.new_message != undefined){
+      let new_message = this.props.new_message;
+      let new_message_markup = <Message message={new_message} key={this.markup.length}></Message>
+      this.markup.push(new_message_markup);
+    }
+    
     return (
       <div className="conversation_container">
-        <div className="messages_container">{this.markup}</div>
+        <div className="messages_container">
+          {this.markup}
+
+        </div>
         <New_message_menu></New_message_menu>
       </div>
     );
+    
   }
 }
 
@@ -92,25 +113,47 @@ class App extends React.Component {
     super(props);
     this.state = {
       should_display_conversation: true,
+      messages_received: false,
+      new_message: undefined,
       messages: []
     }
   }
   componentDidMount(){
     socket.on("all_messages", data => {
-      console.log(data);
+      
       this.setState({
+        messages_received: true,
         messages: JSON.parse(data)
       })
       
     })
+    socket.on("new_message", data => {
+      let new_message = JSON.parse(data);
+      console.log(new_message);
+      this.state.messages.push(new_message);
+      this.state.new_message = new_message;
+      this.forceUpdate();
+    })
+    window.onkeydown = (ev) => {
+      let key = ev.key;
+      if(key === "t"){
+        let data = {
+          time:  new Date().toLocaleTimeString(),
+          username: "kek",
+          message_text: "lul"
+        }
+        socket.emit("send_new_message", JSON.stringify(data));
+      }
+    }
   }
   render() {
     
     return (
       <div className="app_container flex_direction_column">
         {
-          this.state.should_display_conversation === true ? 
-          <Conversation_container messages={this.state.messages}></Conversation_container>
+          this.state.should_display_conversation === true && this.state.messages_received === true ? 
+          
+          <Conversation_container messages={this.state.messages} new_message={this.state.new_message}></Conversation_container>
           :null
         }
       </div>
