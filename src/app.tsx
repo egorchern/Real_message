@@ -8,14 +8,14 @@ let origin = location.origin;
 let socket = io.connect();
 let sound_enabled = true;
 
-function play_new_message_sound_effect(){
-  if(sound_enabled === true){
+function play_new_message_sound_effect() {
+  if (sound_enabled === true) {
     let path = assets.new_message_sound_effect;
-    
+
     let bop = new Howl({
       src: [path],
-      volume: 0.8
-    })
+      volume: 0.8,
+    });
     bop.play();
   }
 }
@@ -52,9 +52,9 @@ class New_message_menu extends React.Component {
 
   reset_message_text = () => {
     this.setState({
-      message_text: ""
-    })
-  }
+      message_text: "",
+    });
+  };
 
   on_textarea_change_focus = (bool) => {
     this.setState({
@@ -90,7 +90,7 @@ class New_message_menu extends React.Component {
             onChange={this.on_textarea_value_change}
             onKeyDown={(ev) => {
               let key = ev.key;
-              
+
               if (key === "Enter") {
                 this.reset_message_text();
                 this.props.send_new_message(this.state.message_text);
@@ -153,27 +153,104 @@ class Conversation_container extends React.Component {
   }
 }
 
+class Menu extends React.Component {
+  socket_binded: boolean;
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      name_selection_phase: true,
+      username: "",
+    };
+    this.socket_binded = false;
+  }
+
+  on_username_change = (ev) => {
+    this.setState({
+      username: ev.target.value,
+    });
+  };
+
+  handle_username = () => {
+    let username = this.state.username;
+    let bool;
+
+    //Checks if username is available through the is_username_available socket route
+
+    socket.on("is_username_available_response", (data) => {
+      let parsed = JSON.parse(data);
+      bool = parsed;
+
+      if (bool === true) {
+        this.props.select_username(username);
+      } else {
+        alert("This username is already taken!");
+      }
+      //Prevents bugs with socket duplication and wrong names selected
+      socket.removeListener("is_username_available_response");
+    });
+
+    let obj = {
+      username: username,
+    };
+    socket.emit("is_username_available", JSON.stringify(obj));
+  };
+
+  render() {
+    return (
+      <div className="conversation_container">
+        {this.state.name_selection_phase === true ? (
+          <div className="name_select_container flex_direction_column">
+            <h2>Username:</h2>
+            <input
+              className="form-control"
+              value={this.state.username}
+              onChange={this.on_username_change}
+            ></input>
+            <button className="btn btn-primary" onClick={this.handle_username}>
+              Submit
+            </button>
+          </div>
+        ) : null}
+      </div>
+    );
+  }
+}
+
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      should_display_conversation: true,
+      should_display_conversation: false,
       messages_received: false,
       new_message: undefined,
       messages: [],
+      username: undefined,
     };
   }
-  send_new_message = (message_text) => {
-    let message_obj = {
-      username: "Me",
-      time: new Date().toLocaleTimeString("en-GB", {
-        hour: "numeric",
-        minute: "numeric",
-      }),
-      message_text: message_text,
-    };
-    socket.emit("send_new_message", JSON.stringify(message_obj));
+  select_username = (username) => {
+    //Transmit selected username to the server via register_username socket route
+    socket.emit("register_username", JSON.stringify(username));
+    this.setState({
+      username: username,
+      should_display_conversation: true,
+    });
   };
+
+  send_new_message = (message_text) => {
+    if (message_text != "") {
+      let message_obj = {
+        username: this.state.username,
+        time: new Date().toLocaleTimeString("en-GB", {
+          hour: "numeric",
+          minute: "numeric",
+        }),
+        message_text: message_text,
+      };
+      socket.emit("send_new_message", JSON.stringify(message_obj));
+    }
+  };
+
   componentDidMount() {
     socket.on("all_messages", (data) => {
       this.setState({
@@ -183,13 +260,14 @@ class App extends React.Component {
     });
     socket.on("new_message", (data) => {
       let new_message = JSON.parse(data);
-      
+
       this.state.messages.push(new_message);
       this.state.new_message = new_message;
       play_new_message_sound_effect();
       this.forceUpdate();
     });
   }
+
   render() {
     return (
       <div className="app_container flex_direction_column">
@@ -200,7 +278,9 @@ class App extends React.Component {
             new_message={this.state.new_message}
             send_new_message={this.send_new_message}
           ></Conversation_container>
-        ) : null}
+        ) : (
+          <Menu select_username={this.select_username}></Menu>
+        )}
       </div>
     );
   }

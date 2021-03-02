@@ -11,28 +11,28 @@ var io = socketio(server);
 app.use(express.static("dist"));
 
 let messages = [
-    {
-        time: "23:55:23",
-        username: "Vladiak",
-        message_text: "Hello world",
-    },
-    {
-        time: "12:06:12",
-        username: "Egorcik",
-        message_text: "I am the best jhin in EU",
-    },
-    {
-        time: "12:06:12",
-        username: "Миа бойка",
-        message_text: "Лети лети лепесток, через запад на восток",
-    }
 ]
+let usernames = [];
+/*let rooms = [];*/
 app.get("/", (req, res) => {
     res.status(200).sendFile("index.html");
 })
+
+is_username_free = (username) => {
+    for(let i = 0; i < usernames.length; i += 1){
+        
+        if(username === usernames[i]){
+            return false;
+        }
+    }
+    return true;
+}
+
 io.on("connection", socket => {
     let json_messages = JSON.stringify(messages);
     socket.emit("all_messages", json_messages);
+
+    // Register new message and emit the new message to all sockets
     socket.on("send_new_message", data => {
         let parsed = JSON.parse(data);
         let username = parsed.username;
@@ -45,6 +45,22 @@ io.on("connection", socket => {
         }
         messages.push(new_message);
         io.emit("new_message", JSON.stringify(new_message))
+    });
+
+    // Checks if the username is available through the function and emits the response
+    socket.on("is_username_available", data => {
+        let parsed = JSON.parse(data);
+        let username = parsed.username;
+        
+        let username_available = is_username_free(username);
+        
+        socket.emit("is_username_available_response", JSON.stringify(username_available));
+    })
+    socket.on("register_username", data => {
+        let parsed = JSON.parse(data);
+        
+        usernames.push(parsed);
+        
     })
 })
 

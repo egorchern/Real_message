@@ -6,12 +6,16 @@ $username_color:  hsl(240, 100%, 60%);
 @media (max-width: 768.01px){
     :root{
         --conversation_container_width: 95%;
+        --name_select_container_width: 100%;
+        --submit_button_width: auto;
     }
 }
 
 @media (min-width: 768.01px){
     :root{
         --conversation_container_width: 60%;
+        --name_select_container_width: 80%;
+        --submit_button_width: 40%;
     }
 }
 
@@ -171,6 +175,23 @@ html, body, .app_container{
   
     to {
       transform: translate3d(0, 0, 0);
+    }
+  }
+
+  .name_select_container{
+    margin-left: auto;
+    margin-right: auto;
+    width: var(--name_select_container_width);
+    height: 100%;
+    padding: 8px;
+    input{
+        font-size: $username_font_size;
+    }
+    button{
+        margin-top: 12px;
+        font-size: calc(1.5rem + 0.35vw);
+        width: var(--submit_button_width);
+        max-width: 275px;
     }
   }
   
