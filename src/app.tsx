@@ -159,10 +159,8 @@ class Menu extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      name_selection_phase: true,
       username: "",
     };
-    this.socket_binded = false;
   }
 
   on_username_change = (ev) => {
@@ -199,7 +197,7 @@ class Menu extends React.Component {
   render() {
     return (
       <div className="conversation_container">
-        {this.state.name_selection_phase === true ? (
+        {this.props.should_display_name_select === true ? (
           <div className="name_select_container flex_direction_column">
             <h2>Username:</h2>
             <input
@@ -226,6 +224,7 @@ class App extends React.Component {
       new_message: undefined,
       messages: [],
       username: undefined,
+      should_display_name_select: true,
     };
   }
   select_username = (username) => {
@@ -234,6 +233,7 @@ class App extends React.Component {
     this.setState({
       username: username,
       should_display_conversation: true,
+      should_display_name_select: false,
     });
   };
 
@@ -266,6 +266,23 @@ class App extends React.Component {
       play_new_message_sound_effect();
       this.forceUpdate();
     });
+    socket.on("username_response", (data) => {
+      let parsed = JSON.parse(data);
+      if(parsed != null){
+
+      
+        this.setState({
+          username: parsed,
+          should_display_name_select: false,
+          should_display_conversation: true,
+        });
+      }
+      else{
+        this.setState({
+          username: parsed
+        })
+      }
+    });
   }
 
   render() {
@@ -279,7 +296,17 @@ class App extends React.Component {
             send_new_message={this.send_new_message}
           ></Conversation_container>
         ) : (
-          <Menu select_username={this.select_username}></Menu>
+          <div className="size_full flex_direction_column">
+          {
+            this.state.username === null ? (
+            <Menu
+              select_username={this.select_username}
+              should_display_name_select={this.state.should_display_name_select}
+            ></Menu>
+            )
+            :null
+          }
+          </div>
         )}
       </div>
     );
