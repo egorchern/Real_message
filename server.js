@@ -37,6 +37,7 @@ is_username_free = (username) => {
 }
 
 get_ipv4 = (address) => {
+    
     let reg = /^::ffff:(?<ipv4>\d+\.\d+\.\d+\.\d+)$/;
     let temp = reg.exec(address);
     return temp[temp.length - 1];
@@ -54,7 +55,7 @@ get_ip_index = (ip) => {
 }
 
 io.on("connection", socket => {
-    let remote_ip = socket.handshake.address;;
+    let remote_ip = socket.handshake.headers['x-forwarded-for'] || socket.handshake.address;
     let ip = get_ipv4(remote_ip);
     let ip_index = get_ip_index(ip);
 
