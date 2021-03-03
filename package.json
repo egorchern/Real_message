@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build_front": "parcel src/index.html",
+    "build_front": "parcel src/index_deploy.html",
     "build_back": "nodemon server.js"
   },
   "keywords": [],

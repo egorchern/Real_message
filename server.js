@@ -5,6 +5,7 @@ const socketio = require("socket.io");
 let dist_path = path.join(__dirname, "dist");
 let app = express();
 const port = process.env.PORT || 3000;
+app.set('trust proxy', true);
 var server = http.createServer(app);
 var io = socketio(server);
 
@@ -16,11 +17,14 @@ let usernames = [];
 let ips = [];
 /*let rooms = [];*/
 
-app.get("/", (req, res) => {
-    console.log(req);
+index_controller = (req, res) => {
+    
 
-    res.status(200).sendFile("index.html");
-})
+    res.status(200).sendFile("index_deploy.html", {root: "dist"});
+    
+}
+
+app.get("/", index_controller);
 
 is_username_free = (username) => {
     for (let i = 0; i < usernames.length; i += 1) {
@@ -50,7 +54,7 @@ get_ip_index = (ip) => {
 }
 
 io.on("connection", socket => {
-    let remote_ip = socket.conn.remoteAddress;
+    let remote_ip = socket.handshake.address;;
     let ip = get_ipv4(remote_ip);
     let ip_index = get_ip_index(ip);
 
