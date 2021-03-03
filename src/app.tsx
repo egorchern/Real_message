@@ -8,6 +8,16 @@ let origin = location.origin;
 let socket = io.connect();
 let sound_enabled = true;
 
+function get_username(){
+  let username = JSON.parse(localStorage.getItem("username"));
+  return username;
+}
+
+function set_username(username){
+  let stringified = JSON.stringify(username);
+  localStorage.setItem("username", stringified);
+}
+
 function play_new_message_sound_effect() {
   if (sound_enabled === true) {
     let path = assets.new_message_sound_effect;
@@ -229,6 +239,7 @@ class App extends React.Component {
   }
   select_username = (username) => {
     //Transmit selected username to the server via register_username socket route
+    set_username(username);
     socket.emit("register_username", JSON.stringify(username));
     this.setState({
       username: username,
@@ -270,6 +281,21 @@ class App extends React.Component {
       
       this.forceUpdate();
     });
+    let local_username = get_username();
+    if(local_username != null){
+      this.setState({
+        username: local_username,
+        should_display_name_select: false,
+        should_display_conversation: true,
+      });
+    }
+    else{
+      this.setState({
+        username: local_username
+      })
+    }
+    
+    /*
     socket.on("username_response", (data) => {
       let parsed = JSON.parse(data);
       if(parsed != null){
@@ -287,6 +313,7 @@ class App extends React.Component {
         })
       }
     });
+    */
   }
 
   render() {

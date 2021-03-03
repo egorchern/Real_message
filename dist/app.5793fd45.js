@@ -42779,6 +42779,16 @@ var origin = location.origin;
 var socket = socket_io_1.io.connect();
 var sound_enabled = true;
 
+function get_username() {
+  var username = JSON.parse(localStorage.getItem("username"));
+  return username;
+}
+
+function set_username(username) {
+  var stringified = JSON.stringify(username);
+  localStorage.setItem("username", stringified);
+}
+
 function play_new_message_sound_effect() {
   if (sound_enabled === true) {
     var path = __mp3_1.default.new_message_sound_effect;
@@ -43028,6 +43038,7 @@ function (_super) {
 
     _this.select_username = function (username) {
       //Transmit selected username to the server via register_username socket route
+      set_username(username);
       socket.emit("register_username", JSON.stringify(username));
 
       _this.setState({
@@ -43084,21 +43095,38 @@ function (_super) {
 
       _this.forceUpdate();
     });
-    socket.on("username_response", function (data) {
-      var parsed = JSON.parse(data);
+    var local_username = get_username();
 
-      if (parsed != null) {
-        _this.setState({
+    if (local_username != null) {
+      this.setState({
+        username: local_username,
+        should_display_name_select: false,
+        should_display_conversation: true
+      });
+    } else {
+      this.setState({
+        username: local_username
+      });
+    }
+    /*
+    socket.on("username_response", (data) => {
+      let parsed = JSON.parse(data);
+      if(parsed != null){
+            
+        this.setState({
           username: parsed,
           should_display_name_select: false,
-          should_display_conversation: true
-        });
-      } else {
-        _this.setState({
-          username: parsed
+          should_display_conversation: true,
         });
       }
+      else{
+        this.setState({
+          username: parsed
+        })
+      }
     });
+    */
+
   };
 
   App.prototype.render = function () {
@@ -43148,7 +43176,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "54707" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55626" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

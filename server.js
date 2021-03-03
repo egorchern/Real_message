@@ -54,12 +54,13 @@ get_ip_index = (ip) => {
 }
 
 io.on("connection", socket => {
-    let remote_ip = socket.handshake.address;;
+    /*
+    let remote_ip = socket.handshake.address;
     let ip = get_ipv4(remote_ip);
     let ip_index = get_ip_index(ip);
 
     socket.emit("username_response", JSON.stringify(usernames[ip_index]));
-
+    */
 
 
     let json_messages = JSON.stringify(messages);
@@ -91,8 +92,9 @@ io.on("connection", socket => {
     })
     socket.on("register_username", data => {
         let parsed = JSON.parse(data);
+        /*
         ips.push(ip);
-        console.log(ips);
+        */
 
         usernames.push(parsed);
 
