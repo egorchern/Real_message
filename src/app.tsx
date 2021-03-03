@@ -258,12 +258,16 @@ class App extends React.Component {
         messages: JSON.parse(data),
       });
     });
+    
     socket.on("new_message", (data) => {
       let new_message = JSON.parse(data);
 
       this.state.messages.push(new_message);
       this.state.new_message = new_message;
-      play_new_message_sound_effect();
+      if(new_message.username != this.state.username && (this.state.username != null && this.state.username != undefined)){
+        play_new_message_sound_effect();
+      }
+      
       this.forceUpdate();
     });
     socket.on("username_response", (data) => {
