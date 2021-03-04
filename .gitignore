@@ -1,3 +1,6 @@
 .vscode
 node_modules
 .cache
+messages.txt
+usernames.txt
+connection_string.txt

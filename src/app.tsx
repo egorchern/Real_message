@@ -249,13 +249,19 @@ class App extends React.Component {
   };
 
   send_new_message = (message_text) => {
+
     if (message_text != "") {
+      let date = new Date().toLocaleDateString("en-GB");
+      let time = new Date().toLocaleTimeString("en-GB", {
+        hour: "numeric",
+        minute: "numeric",
+        second: "numeric"
+      });
+      let time_string = `${time} ${date}`;
+      
       let message_obj = {
         username: this.state.username,
-        time: new Date().toLocaleTimeString("en-GB", {
-          hour: "numeric",
-          minute: "numeric",
-        }),
+        time: time_string,
         message_text: message_text,
       };
       socket.emit("send_new_message", JSON.stringify(message_obj));

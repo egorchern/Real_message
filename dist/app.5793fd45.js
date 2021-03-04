@@ -43050,12 +43050,16 @@ function (_super) {
 
     _this.send_new_message = function (message_text) {
       if (message_text != "") {
+        var date = new Date().toLocaleDateString("en-GB");
+        var time = new Date().toLocaleTimeString("en-GB", {
+          hour: "numeric",
+          minute: "numeric",
+          second: "numeric"
+        });
+        var time_string = time + " " + date;
         var message_obj = {
           username: _this.state.username,
-          time: new Date().toLocaleTimeString("en-GB", {
-            hour: "numeric",
-            minute: "numeric"
-          }),
+          time: time_string,
           message_text: message_text
         };
         socket.emit("send_new_message", JSON.stringify(message_obj));
@@ -43176,7 +43180,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49234" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "51787" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

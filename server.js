@@ -2,20 +2,101 @@ const express = require('express');
 const path = require('path');
 const http = require("http");
 const socketio = require("socket.io");
+const { Client } = require("pg");
 const fs = require("fs");
 let dist_path = path.join(__dirname, "dist");
 let app = express();
 const port = process.env.PORT || 3000;
+process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
 app.set('trust proxy', true);
 var server = http.createServer(app);
 var io = socketio(server);
-
+let dev_mode = false;
+if(dev_mode === true){
+    let database_url = fs.readFileSync("connection_string.txt", "utf8");
+    
+    process.env.DATABASE_URL = database_url;
+}
 app.use(express.static("dist"));
+
+const client = new Client({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+        rejectUnauthorized: false
+    }
+});
+
+
+client.connect();
 
 let messages = [
 ]
 let usernames = [];
 
+get_messages = () => {
+    client.query(
+        `
+        SELECT * 
+        FROM messages
+        `, (err, res) => {
+
+        let rows = res.rows;
+        for(let i = 0; i < rows.length; i += 1){
+            let current_row = rows[i];
+            let message = {
+                username: current_row.username,
+                time: current_row.time,
+                message_text: current_row.message_text
+            }
+            messages.push(message);
+        }
+       
+    });
+}
+
+get_usernames = () => {
+    client.query(`
+    SELECT *
+    FROM usernames
+    `, (err, res) => {
+        let rows = res.rows;
+        rows.forEach(row => {
+            usernames.push(row.username);
+        });
+    })
+}
+
+insert_last_username = () => {
+    let last = usernames[usernames.length - 1];
+    let sql_query_string = `
+    INSERT INTO usernames(username)
+    VALUES('${last}')
+    `;
+    client.query(sql_query_string, (err, res) => {
+        if(err){
+            console.log(err);
+        }
+    }) 
+}
+
+insert_last_message = () => {
+    let last = messages[messages.length - 1];
+    let sql_query_string = `
+    INSERT INTO messages(username, time, message_text)
+    VALUES('${last.username}', '${last.time}', '${last.message_text}')
+    `;
+    client.query(sql_query_string, (err, res) => {
+        if(err){
+            console.log(err);
+        }
+    })
+}
+
+get_usernames();
+get_messages();
+console.log(usernames);
+console.log(messages);
+/*
 write_last_message_to_file = () => {
     let last = messages[messages.length - 1];
     let str =
@@ -67,8 +148,10 @@ write_last_username_to_file = () => {
 
 read_messages_from_file();
 read_usernames_from_file();
+*/
+
 /*let rooms = [];*/
-console.log(usernames);
+
 
 index_controller = (req, res) => {
 
@@ -132,7 +215,8 @@ io.on("connection", socket => {
         }
         messages.push(new_message);
         io.emit("new_message", JSON.stringify(new_message));
-        write_last_message_to_file();
+        //write_last_message_to_file();
+        insert_last_message();
     });
 
     // Checks if the username is available through the function and emits the response
@@ -151,7 +235,8 @@ io.on("connection", socket => {
         */
 
         usernames.push(parsed);
-        write_last_username_to_file();
+        //write_last_username_to_file();
+        insert_last_username();
 
     })
 })
