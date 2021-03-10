@@ -11,7 +11,9 @@ process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
 app.set('trust proxy', true);
 var server = http.createServer(app);
 var io = socketio(server);
-let dev_mode = true;
+let dev_mode = false;
+
+// if dev mode enabled, fetch database connection string from the connection_string.txt file.
 if(dev_mode === true){
     let database_url = fs.readFileSync("connection_string.txt", "utf8");
     
@@ -19,6 +21,7 @@ if(dev_mode === true){
 }
 app.use(express.static("dist"));
 
+// connect to a database
 const client = new Client({
     connectionString: process.env.DATABASE_URL,
     ssl: {
@@ -33,6 +36,7 @@ let messages = [
 ]
 let usernames = [];
 
+//fetch messages from the database and push them to messages array
 get_messages = () => {
     client.query(
         `
@@ -54,6 +58,7 @@ get_messages = () => {
     });
 }
 
+// fetch usernames from the database and push them to usernames
 get_usernames = () => {
     client.query(`
     SELECT *
@@ -66,6 +71,7 @@ get_usernames = () => {
     })
 }
 
+// insert the last username from usernames array into the database
 insert_last_username = () => {
     let last = usernames[usernames.length - 1];
     let sql_query_string = `
@@ -79,6 +85,7 @@ insert_last_username = () => {
     }) 
 }
 
+// insert the last message from messages array into the database 
 insert_last_message = () => {
     let last = messages[messages.length - 1];
     let sql_query_string = `
@@ -162,6 +169,7 @@ index_controller = (req, res) => {
 
 app.get("/", index_controller);
 
+// checks if the username is not in usernames array
 is_username_free = (username) => {
     for (let i = 0; i < usernames.length; i += 1) {
 
@@ -172,6 +180,7 @@ is_username_free = (username) => {
     return true;
 }
 
+// gets ipv4 address from ipv6 formatted string
 get_ipv4 = (address) => {
     let reg = /^::ffff:(?<ipv4>\d+\.\d+\.\d+\.\d+)$/;
     let temp = reg.exec(address);
@@ -202,6 +211,7 @@ io.on("connection", socket => {
     let json_messages = JSON.stringify(messages);
     socket.emit("all_messages", json_messages);
     console.log(socket);
+
     // Register new message and emit the new message to all sockets
     socket.on("send_new_message", data => {
         let parsed = JSON.parse(data);
@@ -228,6 +238,8 @@ io.on("connection", socket => {
 
         socket.emit("is_username_available_response", JSON.stringify(username_available));
     })
+
+    // registers the new username in usernames array and calls insertion into database method
     socket.on("register_username", data => {
         let parsed = JSON.parse(data);
         /*
