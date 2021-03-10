@@ -11,7 +11,7 @@ process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0;
 app.set('trust proxy', true);
 var server = http.createServer(app);
 var io = socketio(server);
-let dev_mode = false;
+let dev_mode = true;
 if(dev_mode === true){
     let database_url = fs.readFileSync("connection_string.txt", "utf8");
     
@@ -201,7 +201,7 @@ io.on("connection", socket => {
 
     let json_messages = JSON.stringify(messages);
     socket.emit("all_messages", json_messages);
-
+    console.log(socket);
     // Register new message and emit the new message to all sockets
     socket.on("send_new_message", data => {
         let parsed = JSON.parse(data);
