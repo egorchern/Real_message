@@ -3,20 +3,11 @@ import {render} from "react-dom";
 import {io} from "socket.io/client-dist/socket.io";
 import {Howl} from "howler";
 import assets from "./assets/*.mp3";
+import json from "body-parser/lib/types/json";
 let root = document.querySelector("#root");
 let origin = location.origin;
 let socket = io.connect();
 let sound_enabled = true;
-
-function get_username(){
-  let username = JSON.parse(localStorage.getItem("username"));
-  return username;
-}
-
-function set_username(username){
-  let stringified = JSON.stringify(username);
-  localStorage.setItem("username", stringified);
-}
 
 function play_new_message_sound_effect() {
   if (sound_enabled === true) {
@@ -170,6 +161,7 @@ class Menu extends React.Component {
     super(props);
     this.state = {
       username: "",
+      password: "",
     };
   }
 
@@ -179,47 +171,44 @@ class Menu extends React.Component {
     });
   };
 
-  handle_username = () => {
-    let username = this.state.username;
-    let bool;
-
-    //Checks if username is available through the is_username_available socket route
-
-    socket.on("is_username_available_response", (data) => {
-      let parsed = JSON.parse(data);
-      bool = parsed;
-
-      if (bool === true) {
-        this.props.select_username(username);
-      } else {
-        alert("This username is already taken!");
-      }
-      //Prevents bugs with socket duplication and wrong names selected
-      socket.removeListener("is_username_available_response");
+  on_password_change = (ev) => {
+    this.setState({
+      password: ev.target.value,
     });
+  };
 
-    let obj = {
-      username: username,
-    };
-    socket.emit("is_username_available", JSON.stringify(obj));
+  handle_registration = () => {
+    if (this.state.username != "" && this.state.password != "") {
+      this.props.register(this.state.username, this.state.password);
+    } else {
+      alert("Some fields were left blank. Please fill all fields");
+    }
   };
 
   render() {
     return (
       <div className="conversation_container">
-        {this.props.should_display_name_select === true ? (
-          <div className="name_select_container flex_direction_column">
-            <h2>Username:</h2>
-            <input
-              className="form-control"
-              value={this.state.username}
-              onChange={this.on_username_change}
-            ></input>
-            <button className="btn btn-primary" onClick={this.handle_username}>
-              Submit
-            </button>
-          </div>
-        ) : null}
+        <div className="name_select_container flex_direction_column">
+          <h2>Username:</h2>
+          <input
+            className="form-control"
+            value={this.state.username}
+            onChange={this.on_username_change}
+          ></input>
+          <h2>Password:</h2>
+          <input
+            className="form-control"
+            value={this.state.password}
+            onChange={this.on_password_change}
+            type="password"
+          ></input>
+          <button
+            className="btn btn-primary"
+            onClick={this.handle_registration}
+          >
+            Register
+          </button>
+        </div>
       </div>
     );
   }
@@ -234,31 +223,43 @@ class App extends React.Component {
       new_message: undefined,
       messages: [],
       username: undefined,
-      should_display_name_select: true,
     };
   }
-  select_username = (username) => {
-    //Transmit selected username to the server via register_username socket route
-    set_username(username);
-    socket.emit("register_username", JSON.stringify(username));
-    this.setState({
+
+  register = (username, password) => {
+    let data = {
       username: username,
-      should_display_conversation: true,
-      should_display_name_select: false,
-    });
+      password: password,
+    };
+    let jsoned = JSON.stringify(data);
+
+    // codes: 1 - successful registration, 2 - error, name taken
+    fetch("/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: jsoned,
+    })
+    .then(result => result.json())
+    .then(data => {
+      
+      let code = data.code;
+      console.log(code);
+    })
+    
   };
 
   send_new_message = (message_text) => {
-
     if (message_text != "") {
       let date = new Date().toLocaleDateString("en-GB");
       let time = new Date().toLocaleTimeString("en-GB", {
         hour: "numeric",
         minute: "numeric",
-        second: "numeric"
+        second: "numeric",
       });
       let time_string = `${time} ${date}`;
-      
+
       let message_obj = {
         username: this.state.username,
         time: time_string,
@@ -275,58 +276,28 @@ class App extends React.Component {
         messages: JSON.parse(data),
       });
     });
-    
+
     socket.on("new_message", (data) => {
       let new_message = JSON.parse(data);
 
       this.state.messages.push(new_message);
       this.state.new_message = new_message;
-      if(new_message.username != this.state.username && (this.state.username != null && this.state.username != undefined)){
+      if (
+        new_message.username != this.state.username &&
+        this.state.username != null &&
+        this.state.username != undefined
+      ) {
         play_new_message_sound_effect();
       }
-      
+
       this.forceUpdate();
     });
-    let local_username = get_username();
-    if(local_username != null){
-      this.setState({
-        username: local_username,
-        should_display_name_select: false,
-        should_display_conversation: true,
-      });
-    }
-    else{
-      this.setState({
-        username: local_username
-      })
-    }
-    
-    /*
-    socket.on("username_response", (data) => {
-      let parsed = JSON.parse(data);
-      if(parsed != null){
-
-      
-        this.setState({
-          username: parsed,
-          should_display_name_select: false,
-          should_display_conversation: true,
-        });
-      }
-      else{
-        this.setState({
-          username: parsed
-        })
-      }
-    });
-    */
   }
 
   render() {
     return (
       <div className="app_container flex_direction_column">
-        {this.state.should_display_conversation === true &&
-        this.state.messages_received === true ? (
+        {this.state.should_display_conversation === true ? (
           <Conversation_container
             messages={this.state.messages}
             new_message={this.state.new_message}
@@ -334,15 +305,7 @@ class App extends React.Component {
           ></Conversation_container>
         ) : (
           <div className="size_full flex_direction_column">
-          {
-            this.state.username === null ? (
-            <Menu
-              select_username={this.select_username}
-              should_display_name_select={this.state.should_display_name_select}
-            ></Menu>
-            )
-            :null
-          }
+            <Menu register={this.register}></Menu>
           </div>
         )}
       </div>

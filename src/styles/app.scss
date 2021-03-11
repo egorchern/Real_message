@@ -15,7 +15,7 @@ $username_color:  hsl(240, 100%, 60%);
     :root{
         --conversation_container_width: 60%;
         --name_select_container_width: 80%;
-        --submit_button_width: 40%;
+        --submit_button_width: 30%;
     }
 }
 
@@ -190,11 +190,13 @@ html, body, .app_container{
     width: var(--name_select_container_width);
     height: 100%;
     padding: 8px;
+    max-width: 535px;
     input{
         font-size: $username_font_size;
+        margin-bottom: 12px;
     }
     button{
-        margin-top: 12px;
+        
         font-size: calc(1.5rem + 0.35vw);
         width: var(--submit_button_width);
         max-width: 275px;
