@@ -1,205 +1,231 @@
 @import url("https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400;1,700&family=Roboto:ital,wght@0,400;0,500;1,400;1,500&display=swap");
 $username_font_size: calc(1rem + 0.1vw);
 $message_text_font_size: calc(1rem + 0.05vw);
-$username_color:  hsl(240, 100%, 60%);
+$username_color: hsl(240, 100%, 60%);
 
-@media (max-width: 768.01px){
-    :root{
-        --conversation_container_width: 95%;
-        --name_select_container_width: 100%;
-        --submit_button_width: auto;
-    }
+@media (max-width: 768.01px) {
+  :root {
+    --conversation_container_width: 95%;
+    --name_select_container_width: 100%;
+    --submit_button_width: auto;
+  }
 }
 
-@media (min-width: 768.01px){
-    :root{
-        --conversation_container_width: 60%;
-        --name_select_container_width: 80%;
-        --submit_button_width: 30%;
-    }
+@media (min-width: 768.01px) {
+  :root {
+    --conversation_container_width: 60%;
+    --name_select_container_width: 80%;
+    --submit_button_width: 30%;
+  }
 }
 
-*{
-    font-family: "Lato", sans-serif;
-    word-wrap: break-word;
+* {
+  font-family: "Lato", sans-serif;
+  word-wrap: break-word;
 }
 
-html, body, .app_container{
-    display: grid;
+html,
+body,
+.app_container {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  padding: 0;
+  margin: 0;
+  background-color: hsl(0, 0%, 94.5%);
+}
+.app_container {
+  height: 100vh;
+  overflow: hidden;
+}
+.flex_direction_column {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex_direction_row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.conversation_container {
+  width: var(--conversation_container_width);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+.message_metadata {
+  display: flex;
+  flex-flow: row wrap;
+  margin-left: 4px;
+}
+
+.messages_container {
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 90%;
+}
+
+.padding_small {
+  padding: 8px;
+  flex-grow: 1;
+}
+
+.new_message_container.focused {
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075),
+    0 0 2px 2px hsla(214, 100%, 55%, 60%);
+  border: 1px solid hsla(214, 100%, 55%, 60%);
+}
+
+.new_message_container {
+  padding: 9px;
+  border-radius: 12px;
+  flex-grow: 1;
+  border: 1px solid hsl(0, 0%, 80%);
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+
+  background-color: white;
+  textarea {
     width: 100%;
     height: 100%;
-    padding: 0;
-    margin: 0;
-    
+    border: none;
+    background-image: none;
+    background-color: transparent;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+    text-align: initial;
+
+    resize: none;
+  }
+  textarea:focus {
+    outline: none;
+  }
 }
 
-#root{
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    padding: 0;
-    margin: 0;
-    background-color: hsl(0, 0%, 93.5%);
-}
-.app_container{
-    height: 100vh;
-    overflow: hidden;
-}
-.flex_direction_column{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+.message_username {
+  font-size: $username_font_size;
+  color: $username_color;
+  font-weight: bolder;
+  margin-right: 12px;
 }
 
-.flex_direction_row{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
+.message_time {
+  font-size: $username_font_size;
 }
 
-.conversation_container{
-    width: var(--conversation_container_width);
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    padding-top: 4px;
-    padding-bottom: 4px;
+.message_text_container {
+  background-color: white;
+  display: inline-block;
+  padding: 9px;
+  border-radius: 12px;
+  border: 0.25px solid hsl(0, 0%, 80%);
+  /*border: 2px solid #DFE1E6;*/
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075) !important;
 }
 
-.message_metadata{
-    display: flex;
-    flex-flow: row wrap;
-    margin-left: 4px;
+.message_text {
+  font-size: $message_text_font_size;
 }
 
-.messages_container{
-    overflow-y: auto;
-    overflow-x: hidden;
-    height: 90%;
+.message_container {
+  margin: 18px;
+  animation-name: slideInLeft;
+  animation-duration: 0.5s;
+  animation-fill-mode: forwards;
+  animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  /*animation-timing-function: cubic-bezier(0.19, 1, 0.22, 1);*/
 }
 
-.padding_small{
-    padding: 8px;
-    flex-grow: 1;
+#send_message_btn {
+  margin-left: 6px;
+  width: calc(2rem + 0.1vw);
+  height: calc(2rem + 0.1vw);
+  fill: hsl(219, 10%, 55%);
+  transition: all 0.2s;
+  cursor: pointer;
 }
 
-.new_message_container.focused{
-    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075), 0 0 2px 2px hsla(214, 100%, 55%, 60%);
-    border: 1px solid hsla(214, 100%, 55%, 60%);
+#send_message_btn:hover {
+  transform: scale(1.2);
+  fill: hsl(219, 10%, 35%);
 }
 
-.new_message_container{
-    
-    padding:9px;
-    border-radius: 12px;
-    flex-grow: 1;
-    border: 1px solid hsl(0, 0%, 80%);
-    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
-    
-    
-    background-color: white;
-    textarea{
-        width: 100%;
-        height: 100%;
-        border: none;
-        background-image: none;
-        background-color: transparent;
-        -webkit-box-shadow: none;
-        -moz-box-shadow: none;
-        box-shadow: none;
-        text-align: initial;
-        
-        resize: none;
-    }
-    textarea:focus{
-        outline: none;
-    }
-}
-
-.message_username{
-    font-size: $username_font_size;
-    color: $username_color;
-    font-weight: bolder;
-    margin-right:  12px;
-}
-
-.message_time{
-    font-size: $username_font_size;
-}
-
-.message_text_container{
-    background-color: white;
-    display: inline-block;
-    padding: 9px;
-    border-radius: 12px;
-    border: 0.25px solid hsl(0, 0%, 80%);
-    /*border: 2px solid #DFE1E6;*/
-    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important;
-}
-
-.message_text{
-    font-size: $message_text_font_size;
-
-}
-
-.message_container{
-    margin: 18px;
-    animation-name: slideInLeft;
-    animation-duration: 0.5s;
-    animation-fill-mode: forwards;
-    animation-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    /*animation-timing-function: cubic-bezier(0.19, 1, 0.22, 1);*/
-}
-
-#send_message_btn{
-    margin-left: 6px;
-    width: calc(2rem + 0.1vw);
-    height: calc(2rem + 0.1vw);
-    fill: hsl(219, 10%, 55%);
-    transition: all 0.2s;
-    cursor: pointer;
-}
-
-#send_message_btn:hover{
-    transform: scale(1.2);
-    fill: hsl(219, 10%, 35%);
-}
-
-.size_full{
-    width: 100%;
-    height: 100%;
+.size_full {
+  width: 100%;
+  height: 100%;
 }
 
 @keyframes slideInLeft {
-    from {
-      transform: translate3d(-100%, 0, 0);
-      visibility: visible;
-    }
-  
-    to {
-      transform: translate3d(0, 0, 0);
-    }
+  from {
+    transform: translate3d(-100%, 0, 0);
+    visibility: visible;
   }
 
-  .name_select_container{
-    margin-left: auto;
-    margin-right: auto;
-    width: var(--name_select_container_width);
-    height: 100%;
-    padding: 8px;
-    max-width: 535px;
-    input{
-        font-size: $username_font_size;
-        margin-bottom: 12px;
-    }
-    button{
-        
-        font-size: calc(1.5rem + 0.35vw);
-        width: var(--submit_button_width);
-        max-width: 275px;
-    }
+  to {
+    transform: translate3d(0, 0, 0);
   }
-  
+}
+.my_slide_down{
+    width: 100%;
+}
+.name_select_container {
+  margin-left: auto;
+  margin-right: auto;
+  /*width: var(--name_select_container_width);*/
+  /*height: 100%;*/
+  padding: 8px;
+  max-width: 535px;
+  width: 100%;
+  input {
+    font-size: $username_font_size;
+    margin-bottom: 12px;
+  }
+  button {
+    font-size: calc(1.5rem + 0.35vw);
+    width: var(--submit_button_width);
+    max-width: 275px;
+  }
+}
+
+.react-slidedown {
+  height: 0;
+
+  transition-property: none;
+  transition-duration: 0.5s;
+  transition-timing-function: ease-in-out;
+}
+
+.menu_option {
+    width: 100%;
+    margin-top: 6px;
+    margin-bottom: 6px;
+    padding: 8px;
+    
+    overflow: hidden;
+    
+}
+
+.menu_option.hoverable{
+    cursor: pointer;
+    transition: transform 0.4s;
+}
+.menu_option.hoverable:hover{
+    transform: scale(1.8);
+}

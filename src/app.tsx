@@ -3,6 +3,7 @@ import {render} from "react-dom";
 import {io} from "socket.io/client-dist/socket.io";
 import {Howl} from "howler";
 import assets from "./assets/*.mp3";
+import {SlideDown} from "react-slidedown";
 import json from "body-parser/lib/types/json";
 let root = document.querySelector("#root");
 let origin = location.origin;
@@ -156,13 +157,20 @@ class Conversation_container extends React.Component {
 
 class Menu extends React.Component {
   socket_binded: boolean;
+  transition_duration: number;
 
   constructor(props) {
     super(props);
     this.state = {
       username: "",
       password: "",
+      selected: -1,
+      login_hoverable: true,
+      register_hoverable: true
+
+
     };
+    this.transition_duration = 0.5 * 1000 + 10;
   }
 
   on_username_change = (ev) => {
@@ -177,6 +185,39 @@ class Menu extends React.Component {
     });
   };
 
+  switch_hoverable_on = (index) => {
+    let opposite_index;
+
+    if(index === 0){
+      opposite_index = 1;
+    }
+    else if(index === 1){
+      opposite_index = 0;
+    }
+
+    if(opposite_index === 0){
+      this.setState({
+        login_hoverable: true
+      })
+    }
+    else if(opposite_index === 1){
+      this.setState({
+        register_hoverable: true
+      })
+    }
+  }
+
+  on_menu_option_click = (selected) => {
+    setTimeout(() => {
+      this.switch_hoverable_on(selected);
+    }, this.transition_duration)
+    this.setState({
+      selected: selected,
+      login_hoverable: false,
+      register_hoverable: false
+    })
+  }
+
   handle_registration = () => {
     if (this.state.username != "" && this.state.password != "") {
       this.props.register(this.state.username, this.state.password);
@@ -186,28 +227,93 @@ class Menu extends React.Component {
   };
 
   render() {
+    let focused_content;
+    let class_lst_login = "menu_option flex_direction_column";
+    let class_lst_register = "menu_option flex_direction_column";
+    if(this.state.login_hoverable === true){
+      class_lst_login += " hoverable"
+    }
+
+    if(this.state.register_hoverable === true){
+      class_lst_register += " hoverable"
+    }
+
     return (
-      <div className="conversation_container">
-        <div className="name_select_container flex_direction_column">
-          <h2>Username:</h2>
-          <input
-            className="form-control"
-            value={this.state.username}
-            onChange={this.on_username_change}
-          ></input>
-          <h2>Password:</h2>
-          <input
-            className="form-control"
-            value={this.state.password}
-            onChange={this.on_password_change}
-            type="password"
-          ></input>
-          <button
-            className="btn btn-primary"
-            onClick={this.handle_registration}
-          >
-            Register
-          </button>
+      <div className="conversation_container flex_direction_column">
+        <div className={class_lst_login} onClick={() => {
+          if(this.state.login_hoverable === true){
+            this.on_menu_option_click(0);
+          }
+        }}>
+          
+          
+        
+          <h1>Log in</h1>
+          <SlideDown className="my_slide_down">
+            {
+              this.state.selected === 0 ?
+              
+              <div className="name_select_container flex_direction_column">
+                <h2>Username:</h2>
+                <input
+                  className="form-control"
+                  value={this.state.username}
+                  onChange={this.on_username_change}
+                ></input>
+                <h2>Password:</h2>
+                <input
+                  className="form-control"
+                  value={this.state.password}
+                  onChange={this.on_password_change}
+                  type="password"
+                ></input>
+                <button
+                  className="btn btn-primary"
+                  onClick={this.handle_registration}
+                >
+                  Log in
+                </button>
+              </div>
+              
+              : null
+            }
+          </SlideDown>
+        </div>
+        <div className={class_lst_register} onClick={() => {
+          if(this.state.register_hoverable === true){
+            this.on_menu_option_click(1);
+          }
+        }}>
+          <h1>Register</h1>
+          <SlideDown className="my_slide_down">
+            {
+              this.state.selected === 1 ?
+              
+              <div className="name_select_container flex_direction_column">
+                <h2>Username:</h2>
+                <input
+                  className="form-control"
+                  value={this.state.username}
+                  onChange={this.on_username_change}
+                ></input>
+                <h2>Password:</h2>
+                <input
+                  className="form-control"
+                  value={this.state.password}
+                  onChange={this.on_password_change}
+                  type="password"
+                ></input>
+                <button
+                  className="btn btn-primary"
+                  onClick={this.handle_registration}
+                >
+                  Register
+                </button>
+              </div>
+              
+              : null
+            }
+          </SlideDown>
         </div>
       </div>
     );
