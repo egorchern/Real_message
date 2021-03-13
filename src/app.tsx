@@ -11,6 +11,21 @@ let origin = location.origin;
 let socket = io.connect();
 let sound_enabled = true;
 
+function get_username  () {
+  return new Promise(resolve => {
+    fetch("/get_username", {
+      method: "POST"
+    })
+    .then(result => result.json())
+    .then(data => {
+      let username = data.username;
+      resolve(username);
+      return username;
+    })
+  })
+  
+}
+
 function play_new_message_sound_effect() {
   if (sound_enabled === true) {
     let path = assets.new_message_sound_effect;
@@ -137,6 +152,11 @@ class Conversation_container extends React.Component {
     this.scroll_into_view();
   }
   render() {
+    if(this.props.messages.length > 0 && this.props.new_message === undefined){
+      this.markup = this.props.messages.map((message, index) => {
+        return <Message message={message} key={index}></Message>;
+      });
+    }
     if (this.props.new_message != undefined) {
       let new_message = this.props.new_message;
       let new_message_markup = (
@@ -195,7 +215,7 @@ class Alert_message extends React.Component {
         {message != undefined ? (
           <div className="flex_direction_row">
             <span className="margin_right">{message}</span>
-            
+
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="24"
@@ -274,6 +294,8 @@ class Menu extends React.Component {
     this.setState({
       selected: selected,
       login_hoverable: false,
+      username: "",
+      password: "",
       register_hoverable: false,
     });
   };
@@ -281,6 +303,10 @@ class Menu extends React.Component {
   handle_registration = () => {
     this.props.register(this.state.username, this.state.password);
   };
+
+  handle_log_in = () => {
+    this.props.log_in(this.state.username, this.state.password);
+  }
 
   render() {
     let focused_content;
@@ -323,7 +349,7 @@ class Menu extends React.Component {
                 ></input>
                 <button
                   className="btn btn-primary"
-                  onClick={this.handle_registration}
+                  onClick={this.handle_log_in}
                 >
                   Log in
                 </button>
@@ -375,15 +401,17 @@ class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      should_display_conversation: false,
       messages_received: false,
       new_message: undefined,
       messages: [],
-      username: undefined,
+      username: this.props.username,
       alert_message: undefined,
       alert_visibility: true,
     };
+    
   }
+
+  
 
   dismiss_alert = () => {
     this.setState({
@@ -392,7 +420,6 @@ class App extends React.Component {
   };
 
   register = (username, password) => {
-    console.log(username, password);
     if (username != "" && password != "") {
       let data = {
         username: username,
@@ -435,6 +462,42 @@ class App extends React.Component {
     }
   };
 
+  log_in = (username, password) => {
+    if (username != "" && password != "") {
+      let data = {
+        username: username,
+        password: password,
+      };
+      let jsoned = JSON.stringify(data);
+
+      // codes: 1 - successful login, 2 - credentials not found
+      fetch("/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: jsoned,
+      })
+      .then((result) => result.json())
+      .then((data) => {
+        let code = data.code;
+        if(code === 2){
+          this.setState({
+            alert_message: "Invalid credentials. Either the passwords does not match or user with selected username does not exist",
+            alert_color: "red",
+            alert_visibility: true,
+          });
+        }
+      });
+    } else {
+      this.setState({
+        alert_message: "Some fields were left empty. Please fill all fields",
+        alert_color: "red",
+        alert_visibility: true,
+      });
+    }
+  };
+
   send_new_message = (message_text) => {
     if (message_text != "") {
       let date = new Date().toLocaleDateString("en-GB");
@@ -455,13 +518,14 @@ class App extends React.Component {
   };
 
   componentDidMount() {
+    
     socket.on("all_messages", (data) => {
       this.setState({
         messages_received: true,
         messages: JSON.parse(data),
       });
     });
-
+    socket.emit("get_all_messages");
     socket.on("new_message", (data) => {
       let new_message = JSON.parse(data);
 
@@ -482,7 +546,7 @@ class App extends React.Component {
   render() {
     return (
       <div className="app_container flex_direction_column">
-        {this.state.should_display_conversation === true ? (
+        {this.state.username != undefined ? (
           <Conversation_container
             messages={this.state.messages}
             new_message={this.state.new_message}
@@ -496,7 +560,7 @@ class App extends React.Component {
               alert_visibility={this.state.alert_visibility}
               dismiss_alert={this.dismiss_alert}
             ></Alert_message>
-            <Menu register={this.register}></Menu>
+            <Menu register={this.register} log_in={this.log_in}></Menu>
           </div>
         )}
       </div>
@@ -504,4 +568,10 @@ class App extends React.Component {
   }
 }
 
-render(<App />, root);
+async function main(){
+  let username = await get_username();
+  
+  render(<App username={username}/>, root);
+}
+
+main();
