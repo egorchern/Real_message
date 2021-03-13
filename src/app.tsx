@@ -5,6 +5,7 @@ import {Howl} from "howler";
 import assets from "./assets/*.mp3";
 import {SlideDown} from "react-slidedown";
 import json from "body-parser/lib/types/json";
+import {isElementAccessExpression} from "typescript";
 let root = document.querySelector("#root");
 let origin = location.origin;
 let socket = io.connect();
@@ -155,6 +156,69 @@ class Conversation_container extends React.Component {
   }
 }
 
+class Alert_message extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+  render() {
+    let color = this.props.color;
+    let background_color;
+    let border_color;
+
+    if (color === "red") {
+      color = "hsl(355deg, 61%, 32%)";
+      background_color = "#f8d7da";
+      border_color = "#f5c2c7";
+    } else if (color === "green") {
+      color = "hsl(152deg, 69%, 19%)";
+      background_color = "#d1e7dd";
+      border_color = "#badbcc";
+    }
+
+    let alert_style = {
+      color: color,
+      backgroundColor: background_color,
+      borderColor: border_color,
+    };
+
+    let message = this.props.message;
+    let animate = this.props.alert_visibility === true;
+    let class_list = "alert_message";
+    if (animate === true) {
+      class_list += " animate_fade_in";
+    } else {
+      class_list += " animate_fade_out";
+    }
+
+    return (
+      <div className={class_list} style={alert_style}>
+        {message != undefined ? (
+          <div className="flex_direction_row">
+            <span className="margin_right">{message}</span>
+            
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="black"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="close_alert"
+              onClick={this.props.dismiss_alert}
+            >
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </div>
+        ) : null}
+      </div>
+    );
+  }
+}
+
 class Menu extends React.Component {
   socket_binded: boolean;
   transition_duration: number;
@@ -166,9 +230,7 @@ class Menu extends React.Component {
       password: "",
       selected: -1,
       login_hoverable: true,
-      register_hoverable: true
-
-
+      register_hoverable: true,
     };
     this.transition_duration = 0.5 * 1000 + 10;
   }
@@ -188,71 +250,63 @@ class Menu extends React.Component {
   switch_hoverable_on = (index) => {
     let opposite_index;
 
-    if(index === 0){
+    if (index === 0) {
       opposite_index = 1;
-    }
-    else if(index === 1){
+    } else if (index === 1) {
       opposite_index = 0;
     }
 
-    if(opposite_index === 0){
+    if (opposite_index === 0) {
       this.setState({
-        login_hoverable: true
-      })
-    }
-    else if(opposite_index === 1){
+        login_hoverable: true,
+      });
+    } else if (opposite_index === 1) {
       this.setState({
-        register_hoverable: true
-      })
+        register_hoverable: true,
+      });
     }
-  }
+  };
 
   on_menu_option_click = (selected) => {
     setTimeout(() => {
       this.switch_hoverable_on(selected);
-    }, this.transition_duration)
+    }, this.transition_duration);
     this.setState({
       selected: selected,
       login_hoverable: false,
-      register_hoverable: false
-    })
-  }
+      register_hoverable: false,
+    });
+  };
 
   handle_registration = () => {
-    if (this.state.username != "" && this.state.password != "") {
-      this.props.register(this.state.username, this.state.password);
-    } else {
-      alert("Some fields were left blank. Please fill all fields");
-    }
+    this.props.register(this.state.username, this.state.password);
   };
 
   render() {
     let focused_content;
     let class_lst_login = "menu_option flex_direction_column";
     let class_lst_register = "menu_option flex_direction_column";
-    if(this.state.login_hoverable === true){
-      class_lst_login += " hoverable"
+    if (this.state.login_hoverable === true) {
+      class_lst_login += " hoverable";
     }
 
-    if(this.state.register_hoverable === true){
-      class_lst_register += " hoverable"
+    if (this.state.register_hoverable === true) {
+      class_lst_register += " hoverable";
     }
 
     return (
       <div className="conversation_container flex_direction_column">
-        <div className={class_lst_login} onClick={() => {
-          if(this.state.login_hoverable === true){
-            this.on_menu_option_click(0);
-          }
-        }}>
-          
-          
-        
+        <div
+          className={class_lst_login}
+          onClick={() => {
+            if (this.state.login_hoverable === true) {
+              this.on_menu_option_click(0);
+            }
+          }}
+        >
           <h1>Log in</h1>
           <SlideDown className="my_slide_down">
-            {
-              this.state.selected === 0 ?
-              
+            {this.state.selected === 0 ? (
               <div className="name_select_container flex_direction_column">
                 <h2>Username:</h2>
                 <input
@@ -274,21 +328,20 @@ class Menu extends React.Component {
                   Log in
                 </button>
               </div>
-              
-              : null
-            }
+            ) : null}
           </SlideDown>
         </div>
-        <div className={class_lst_register} onClick={() => {
-          if(this.state.register_hoverable === true){
-            this.on_menu_option_click(1);
-          }
-        }}>
+        <div
+          className={class_lst_register}
+          onClick={() => {
+            if (this.state.register_hoverable === true) {
+              this.on_menu_option_click(1);
+            }
+          }}
+        >
           <h1>Register</h1>
           <SlideDown className="my_slide_down">
-            {
-              this.state.selected === 1 ?
-              
+            {this.state.selected === 1 ? (
               <div className="name_select_container flex_direction_column">
                 <h2>Username:</h2>
                 <input
@@ -310,9 +363,7 @@ class Menu extends React.Component {
                   Register
                 </button>
               </div>
-              
-              : null
-            }
+            ) : null}
           </SlideDown>
         </div>
       </div>
@@ -329,31 +380,59 @@ class App extends React.Component {
       new_message: undefined,
       messages: [],
       username: undefined,
+      alert_message: undefined,
+      alert_visibility: true,
     };
   }
 
-  register = (username, password) => {
-    let data = {
-      username: username,
-      password: password,
-    };
-    let jsoned = JSON.stringify(data);
+  dismiss_alert = () => {
+    this.setState({
+      alert_visibility: false,
+    });
+  };
 
-    // codes: 1 - successful registration, 2 - error, name taken
-    fetch("/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: jsoned,
-    })
-    .then(result => result.json())
-    .then(data => {
-      
-      let code = data.code;
-      console.log(code);
-    })
-    
+  register = (username, password) => {
+    console.log(username, password);
+    if (username != "" && password != "") {
+      let data = {
+        username: username,
+        password: password,
+      };
+      let jsoned = JSON.stringify(data);
+
+      // codes: 1 - successful registration, 2 - error, name taken
+      fetch("/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: jsoned,
+      })
+        .then((result) => result.json())
+        .then((data) => {
+          let code = data.code;
+          let alert_message, alert_color;
+          if (code === 2) {
+            alert_message =
+              "Chosen username is already taken. Please choose another username";
+            alert_color = "red";
+          } else if (code === 1) {
+            alert_message = `User ${username} successfully registered`;
+            alert_color = "green";
+          }
+          this.setState({
+            alert_message: alert_message,
+            alert_color: alert_color,
+            alert_visibility: true,
+          });
+        });
+    } else {
+      this.setState({
+        alert_message: "Some fields were left empty. Please fill all fields",
+        alert_color: "red",
+        alert_visibility: true,
+      });
+    }
   };
 
   send_new_message = (message_text) => {
@@ -411,6 +490,12 @@ class App extends React.Component {
           ></Conversation_container>
         ) : (
           <div className="size_full flex_direction_column">
+            <Alert_message
+              message={this.state.alert_message}
+              color={this.state.alert_color}
+              alert_visibility={this.state.alert_visibility}
+              dismiss_alert={this.dismiss_alert}
+            ></Alert_message>
             <Menu register={this.register}></Menu>
           </div>
         )}
