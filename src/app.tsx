@@ -7,8 +7,8 @@ import {SlideDown} from "react-slidedown";
 import json from "body-parser/lib/types/json";
 import {isElementAccessExpression} from "typescript";
 let root = document.querySelector("#root");
-let origin = location.origin;
-let socket = io.connect();
+
+let socket;
 let sound_enabled = true;
 
 function get_username  () {
@@ -36,6 +36,11 @@ function play_new_message_sound_effect() {
     });
     bop.play();
   }
+}
+
+function log_out(){
+  document.cookie = "Auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  window.location.reload();
 }
 
 class Message extends React.Component {
@@ -488,6 +493,9 @@ class App extends React.Component {
             alert_visibility: true,
           });
         }
+        if(code === 1){
+          window.location.reload();
+        }
       });
     } else {
       this.setState({
@@ -509,7 +517,7 @@ class App extends React.Component {
       let time_string = `${time} ${date}`;
 
       let message_obj = {
-        username: this.state.username,
+        
         time: time_string,
         message_text: message_text,
       };
@@ -570,7 +578,7 @@ class App extends React.Component {
 
 async function main(){
   let username = await get_username();
-  
+  socket = io.connect();
   render(<App username={username}/>, root);
 }
 

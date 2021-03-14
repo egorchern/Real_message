@@ -41,9 +41,11 @@ let users = [];
 let auth_tokens = {
 
 };
+let logged_in_users = [];
+
 
 const generateAuthToken = () => {
-  return crypto.randomBytes(60).toString('hex');
+  return crypto.randomBytes(80).toString('hex');
 }
 
 // hash using bcrypt
@@ -200,6 +202,22 @@ get_ipv4 = (address) => {
   return temp[temp.length - 1];
 };
 
+function getCookie(cname, cookies_string) {
+  var name = cname + "=";
+  var decodedCookie = decodeURIComponent(cookies_string);
+  var ca = decodedCookie.split(';');
+  for(var i = 0; i <ca.length; i++) {
+    var c = ca[i];
+    while (c.charAt(0) == ' ') {
+      c = c.substring(1);
+    }
+    if (c.indexOf(name) == 0) {
+      return c.substring(name.length, c.length);
+    }
+  }
+  return "";
+}
+
 insert_new_user_into_db = (username, password_hash) => {
   client.query(`
   INSERT INTO users
@@ -235,7 +253,7 @@ register_controller = (req, res) => {
 };
 
 index_controller = (req, res) => {
-  console.log(req.user);
+  
   res.status(200).sendFile("index_deploy.html", { root: "dist" });
 };
 
@@ -258,13 +276,14 @@ get_username_controller = (req, res) => {
 login_controller = (req, res) => {
   let username = req.body.username;
   let password = req.body.password;
+  console.log(username, password);
   do_credentials_match(username, password).then(result => {
     if (result === true) {
       let auth_token = generateAuthToken();
       auth_tokens[auth_token] = username;
-      console.log(auth_token);
+      
       // Setting the auth token in cookies
-      res.cookie('Auth_token', auth_token, {httpOnly: true, maxAge: 725760000, expires: 725760000});
+      res.cookie('Auth_token', auth_token, {maxAge: 725760000, expires: 725760000});
       insert_auth_token(username, auth_token);
       res.send({ code: 1 });
     }
@@ -279,7 +298,7 @@ async function main() {
   let message_promise = await get_messages();
   let users_promise = await get_users();
   let tokens_promise = await get_tokens();
-  console.log(auth_tokens);
+  console.log(users, auth_tokens);
   var server = http.createServer(app);
   var io = socketio(server);
   // To support URL-encoded bodies
@@ -305,27 +324,49 @@ async function main() {
   app.post("/login", login_controller);
   app.post("/get_username", get_username_controller);
   io.on("connection", (socket) => {
-    let json_messages = JSON.stringify(messages);
-    socket.on("get_all_messages", data => {
-      socket.emit("all_messages", json_messages);
-    })
-
-    // Register new message and emit the new message to all sockets
-    socket.on("send_new_message", (data) => {
-      let parsed = JSON.parse(data);
-      let username = parsed.username;
-      let time = parsed.time;
-      let message_text = parsed.message_text;
-      let new_message = {
-        username: username,
-        time: time,
-        message_text: message_text,
-      };
-      messages.push(new_message);
-      io.emit("new_message", JSON.stringify(new_message));
-      //write_last_message_to_file();
-      insert_last_message();
-    });
+    let cookies_string = socket.handshake.headers.cookie;
+    let auth_token = getCookie("Auth_token", cookies_string);
+    
+    let username = auth_tokens[auth_token];
+    console.log(`socket with token: ${auth_token}, name: ${username}`);
+    if(username != undefined){
+      //let present = logged_in_users.find(element => element === username);
+      /*if(present === undefined){
+        logged_in_users.push(username);
+      }
+      */
+      logged_in_users.push(username);
+      console.log(logged_in_users);
+      let json_messages = JSON.stringify(messages);
+      socket.on("get_all_messages", data => {
+        socket.emit("all_messages", json_messages);
+      })
+      socket.on("get_logged_in_users", data => {
+        let unique =  [...new Set(logged_in_users)];
+        socket.emit("logged_in_users", JSON.stringify(unique));
+      })
+      socket.on("disconnect", data => {
+        let pop_index = logged_in_users.findIndex(element => element === username);
+        logged_in_users.splice(pop_index, 1);
+        console.log(logged_in_users);
+      })
+      // Register new message and emit the new message to all sockets
+      socket.on("send_new_message", (data) => {
+        let parsed = JSON.parse(data);
+        
+        let time = parsed.time;
+        let message_text = parsed.message_text;
+        let new_message = {
+          username: username,
+          time: time,
+          message_text: message_text,
+        };
+        messages.push(new_message);
+        io.emit("new_message", JSON.stringify(new_message));
+        //write_last_message_to_file();
+        insert_last_message();
+      });
+    }
   });
 
   server.listen(port);
