@@ -98,11 +98,12 @@ insert_last_message = () => {
         }
     })
 }
-
+/*
 get_usernames();
 get_messages();
 console.log(usernames);
 console.log(messages);
+*/
 /*
 write_last_message_to_file = () => {
     let last = messages[messages.length - 1];
