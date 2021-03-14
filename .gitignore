@@ -1,7 +1,6 @@
 .vscode
 node_modules
 .cache
-dist
 messages.txt
 usernames.txt
 connection_string.txt
