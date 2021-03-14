@@ -2,14 +2,19 @@
 $username_font_size: calc(1rem + 0.1vw);
 $message_text_font_size: calc(1rem + 0.05vw);
 $username_color: hsl(240, 100%, 60%);
-
+$log_out_button_font_size: calc(1.5rem + 0.2vw);
 @media (max-width: 768.01px) {
   :root {
     --conversation_container_width: 95%;
     --name_select_container_width: 100%;
     --submit_button_width: auto;
     --alert_width: 95%;
+    --log_out_button_position: static;
   }
+  .log_out_button{
+    margin-bottom: 10px;
+  }
+  
 }
 
 @media (min-width: 768.01px) {
@@ -18,6 +23,12 @@ $username_color: hsl(240, 100%, 60%);
     --name_select_container_width: 80%;
     --submit_button_width: 30%;
     --alert_width: auto;
+    --log_out_button_position: fixed;
+  }
+  .log_out_button{
+    position:fixed;
+    top: 15px;
+    left: 20px;
   }
 }
 
@@ -207,6 +218,23 @@ body,
     opacity: 0;
     visibility: hidden;
   }
+}
+
+.log_out_button{
+
+  cursor: pointer;
+  display: inline;
+  transition: transform 0.4s;
+  span{
+    font-size: $log_out_button_font_size;
+    color: $username_color;
+    font-weight: bolder;
+    
+  }
+}
+
+.log_out_button:hover{
+  transform: scale(1.4);
 }
 
 .alert_message{
