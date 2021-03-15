@@ -284,7 +284,7 @@ login_controller = (req, res) => {
     console.log(username, password);
     do_credentials_match(username, password).then(result => {
         if (result === true) {
-            let client_ip = get_ipv4(request_ip.getClientIp(req));
+            let client_ip = request_ip.getClientIp(req);
             console.log(client_ip);
             let auth_token = generateAuthToken();
             auth_tokens[auth_token] = username;
