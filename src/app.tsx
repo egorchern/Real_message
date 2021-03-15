@@ -51,6 +51,12 @@ class Users_button extends React.Component{
   handle_click = () => {
 
   }
+  componentDidMount(){
+    socket.on("logged_in_users", data => {
+      let logged_in_users = JSON.parse(data);
+      console.log(logged_in_users);
+    })
+  }
   render(){
     return (
       <div className="users_button" onClick={this.handle_click}>

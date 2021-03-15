@@ -43550,6 +43550,13 @@ function (_super) {
     return _this;
   }
 
+  Users_button.prototype.componentDidMount = function () {
+    socket.on("logged_in_users", function (data) {
+      var logged_in_users = JSON.parse(data);
+      console.log(logged_in_users);
+    });
+  };
+
   Users_button.prototype.render = function () {
     return /*#__PURE__*/React.createElement("div", {
       className: "users_button",
