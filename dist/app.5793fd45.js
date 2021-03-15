@@ -42691,11 +42691,14 @@ module.exports = {
 };
 },{"./new_message_sound_effect.mp3":"assets/new_message_sound_effect.mp3"}],"assets/log_out_icon.svg":[function(require,module,exports) {
 module.exports = "/log_out_icon.ae20eabb.svg";
+},{}],"assets/users_icon.svg":[function(require,module,exports) {
+module.exports = "/users_icon.42d927eb.svg";
 },{}],"assets/*.svg":[function(require,module,exports) {
 module.exports = {
-  "log_out_icon": require("./log_out_icon.svg")
+  "log_out_icon": require("./log_out_icon.svg"),
+  "users_icon": require("./users_icon.svg")
 };
-},{"./log_out_icon.svg":"assets/log_out_icon.svg"}],"../node_modules/tslib/tslib.es6.js":[function(require,module,exports) {
+},{"./log_out_icon.svg":"assets/log_out_icon.svg","./users_icon.svg":"assets/users_icon.svg"}],"../node_modules/tslib/tslib.es6.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -43534,6 +43537,31 @@ function log_out() {
   window.location.reload();
 }
 
+var Users_button =
+/** @class */
+function (_super) {
+  __extends(Users_button, _super);
+
+  function Users_button(props) {
+    var _this = _super.call(this, props) || this;
+
+    _this.handle_click = function () {};
+
+    return _this;
+  }
+
+  Users_button.prototype.render = function () {
+    return /*#__PURE__*/React.createElement("div", {
+      className: "users_button",
+      onClick: this.handle_click
+    }, /*#__PURE__*/React.createElement("img", {
+      src: __svg_1.default.users_icon
+    }), /*#__PURE__*/React.createElement("span", null, "Current users"));
+  };
+
+  return Users_button;
+}(React.Component);
+
 var Log_out_button =
 /** @class */
 function (_super) {
@@ -43573,7 +43601,7 @@ function (_super) {
   Side_panel.prototype.render = function () {
     return /*#__PURE__*/React.createElement("div", {
       className: "side_panel"
-    }, /*#__PURE__*/React.createElement(Log_out_button, null));
+    }, /*#__PURE__*/React.createElement(Log_out_button, null), /*#__PURE__*/React.createElement(Users_button, null));
   };
 
   return Side_panel;
@@ -44198,7 +44226,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50692" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "54992" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

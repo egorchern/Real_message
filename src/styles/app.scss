@@ -2,7 +2,7 @@
 $username_font_size: calc(1rem + 0.1vw);
 $message_text_font_size: calc(1rem + 0.05vw);
 $username_color: hsl(240, 100%, 65%);
-$log_out_button_font_size: calc(1.25rem + 0.2vw);
+$log_out_button_font_size: calc(1.25rem + 0.15vw);
 $primary_hover_color: hsl(203, 84%, 60%);
 @media (max-width: 768.01px) {
   :root {
@@ -228,34 +228,37 @@ body,
   display: flex;
   justify-content: center;
   align-items: center;
+  >div{
+    cursor: pointer;
+    display: inline-flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    transition: box-shadow 0.3s;
+    padding: 8px;
+    margin: 4px;
+    width: 100%;
+    img{
+      max-width: 35px;
+      min-width: 20px;
+      width: 5vw;
+    }
+    span{
+      margin-left: 5px;
+      font-size: $log_out_button_font_size;
+      color: $username_color;
+      font-weight: bolder;
+      
+    }
+  }
+  >div:hover{
+    box-shadow: 0px 0px 5px 3px $primary_hover_color;
+  }
 }
 
-.log_out_button{
-  
-  cursor: pointer;
-  display: inline-flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  transition: box-shadow 0.3s;
-  padding: 8px;
-  img{
-    max-width: 35px;
-    min-width: 20px;
-    width: 5vw;
-  }
-  span{
-    margin-left: 5px;
-    font-size: $log_out_button_font_size;
-    color: $username_color;
-    font-weight: bolder;
-    
-  }
-}
 
-.log_out_button:hover{
-  box-shadow: 0px 0px 5px 3px $primary_hover_color;
-}
+
+
 
 .alert_message{
   padding-top: 12px;

@@ -44,7 +44,25 @@ function log_out(){
   window.location.reload();
 }
 
+class Users_button extends React.Component{
+  constructor(props){
+    super(props);
+  }
+  handle_click = () => {
 
+  }
+  render(){
+    return (
+      <div className="users_button" onClick={this.handle_click}>
+        <img src={svg_assets.users_icon}>
+        </img>
+        <span>
+          Current users
+        </span>
+      </div>
+    )
+  }
+}
 
 class Log_out_button extends React.Component{
   constructor(props){
@@ -79,6 +97,9 @@ class Side_panel extends React.Component{
         <Log_out_button>
 
         </Log_out_button>
+        <Users_button>
+          
+        </Users_button>
       </div>
     )
     

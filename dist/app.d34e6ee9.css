@@ -214,8 +214,7 @@ body,
   justify-content: center;
   align-items: center;
 }
-
-.log_out_button {
+.side_panel > div {
   cursor: pointer;
   display: inline-flex;
   flex-direction: row;
@@ -223,20 +222,21 @@ body,
   align-items: center;
   transition: box-shadow 0.3s;
   padding: 8px;
+  margin: 4px;
+  width: 100%;
 }
-.log_out_button img {
+.side_panel > div img {
   max-width: 35px;
   min-width: 20px;
   width: 5vw;
 }
-.log_out_button span {
+.side_panel > div span {
   margin-left: 5px;
-  font-size: calc(1.25rem + 0.2vw);
+  font-size: calc(1.25rem + 0.15vw);
   color: #4d4dff;
   font-weight: bolder;
 }
-
-.log_out_button:hover {
+.side_panel > div:hover {
   box-shadow: 0px 0px 5px 3px #43adef;
 }
 
