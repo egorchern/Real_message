@@ -94,12 +94,23 @@ class Side_panel extends React.Component{
   render(){
     return(
       <div className="side_panel">
-        <Log_out_button>
+        <div className="flex_direction_column">
+          <span className="username_span">
+            Logged in as:
+          </span>
+          <span className="username_span">
+            <strong>{this.props.username}</strong>
+          </span>
+        </div>
+        <div className="buttons_panel">
+          <Log_out_button>
 
-        </Log_out_button>
-        <Users_button>
-          
-        </Users_button>
+          </Log_out_button>
+          <Users_button>
+            
+          </Users_button>
+        </div>
+        
       </div>
     )
     
@@ -235,7 +246,7 @@ class Conversation_container extends React.Component {
 
     return (
       <div className="conversation_container">
-        <Side_panel>
+        <Side_panel username={this.props.username}>
 
         </Side_panel>
         <div className="messages_container">{this.markup}</div>
@@ -627,6 +638,7 @@ class App extends React.Component {
             messages={this.state.messages}
             new_message={this.state.new_message}
             send_new_message={this.send_new_message}
+            username={this.state.username}
           ></Conversation_container>
         ) : (
           <div className="size_full flex_direction_column">

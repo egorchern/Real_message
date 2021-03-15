@@ -43601,7 +43601,15 @@ function (_super) {
   Side_panel.prototype.render = function () {
     return /*#__PURE__*/React.createElement("div", {
       className: "side_panel"
-    }, /*#__PURE__*/React.createElement(Log_out_button, null), /*#__PURE__*/React.createElement(Users_button, null));
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "flex_direction_column"
+    }, /*#__PURE__*/React.createElement("span", {
+      className: "username_span"
+    }, "Logged in as:"), /*#__PURE__*/React.createElement("span", {
+      className: "username_span"
+    }, /*#__PURE__*/React.createElement("strong", null, this.props.username))), /*#__PURE__*/React.createElement("div", {
+      className: "buttons_panel"
+    }, /*#__PURE__*/React.createElement(Log_out_button, null), /*#__PURE__*/React.createElement(Users_button, null)));
   };
 
   return Side_panel;
@@ -43773,7 +43781,9 @@ function (_super) {
 
     return /*#__PURE__*/React.createElement("div", {
       className: "conversation_container"
-    }, /*#__PURE__*/React.createElement(Side_panel, null), /*#__PURE__*/React.createElement("div", {
+    }, /*#__PURE__*/React.createElement(Side_panel, {
+      username: this.props.username
+    }), /*#__PURE__*/React.createElement("div", {
       className: "messages_container"
     }, this.markup), /*#__PURE__*/React.createElement(New_message_menu, {
       send_new_message: this.props.send_new_message
@@ -44156,7 +44166,8 @@ function (_super) {
     }, this.state.username != undefined ? /*#__PURE__*/React.createElement(Conversation_container, {
       messages: this.state.messages,
       new_message: this.state.new_message,
-      send_new_message: this.send_new_message
+      send_new_message: this.send_new_message,
+      username: this.state.username
     }) : /*#__PURE__*/React.createElement("div", {
       className: "size_full flex_direction_column"
     }, /*#__PURE__*/React.createElement(Alert_message, {
@@ -44226,7 +44237,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "54992" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62299" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};

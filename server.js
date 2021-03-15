@@ -16,7 +16,7 @@ process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
 app.set("trust proxy", true);
 
 
-let dev_mode = false;
+let dev_mode = true;
 
 // if dev mode enabled, fetch database connection string from the connection_string.txt file.
 if (dev_mode === true) {
@@ -271,7 +271,7 @@ register_controller = (req, res) => {
         let hashed_password = get_hashed_password(password);
         let new_user = {
             username: username,
-            password_hash: hashed_password
+            passwordHash: hashed_password
         }
         users.push(new_user);
 
@@ -307,7 +307,7 @@ get_username_controller = (req, res) => {
 login_controller = (req, res) => {
     let username = req.body.username;
     let password = req.body.password;
-
+    console.log(`Log in attempt: ${username} ${password}`);
     do_credentials_match(username, password).then(result => {
         if (result === true) {
             let client_ip = request_ip.getClientIp(req);

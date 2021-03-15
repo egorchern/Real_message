@@ -7,7 +7,7 @@
     --alert_width: 95%;
   }
 
-  .side_panel {
+  .buttons_panel {
     flex-direction: row;
   }
 }
@@ -20,10 +20,13 @@
   }
 
   .side_panel {
-    flex-direction: column;
     position: fixed;
     height: 100%;
     left: 0;
+  }
+
+  .buttons_panel {
+    flex-direction: column;
   }
 }
 * {
@@ -154,6 +157,11 @@ body,
   font-size: calc(1rem + 0.05vw);
 }
 
+.username_span {
+  font-size: calc(1.25rem + 0.15vw);
+  color: black;
+}
+
 .message_container {
   margin: 18px;
   animation-name: slideInLeft;
@@ -211,10 +219,16 @@ body,
 .side_panel {
   padding: 10px;
   display: flex;
+  flex-direction: column;
+}
+
+.buttons_panel {
+  display: flex;
   justify-content: center;
   align-items: center;
+  flex-grow: 1;
 }
-.side_panel > div {
+.buttons_panel > div {
   cursor: pointer;
   display: inline-flex;
   flex-direction: row;
@@ -222,21 +236,21 @@ body,
   align-items: center;
   transition: box-shadow 0.3s;
   padding: 8px;
-  margin: 4px;
+  margin-top: 4px;
   width: 100%;
 }
-.side_panel > div img {
+.buttons_panel > div img {
   max-width: 35px;
   min-width: 20px;
   width: 5vw;
 }
-.side_panel > div span {
+.buttons_panel > div span {
   margin-left: 5px;
   font-size: calc(1.25rem + 0.15vw);
   color: #4d4dff;
   font-weight: bolder;
 }
-.side_panel > div:hover {
+.buttons_panel > div:hover {
   box-shadow: 0px 0px 5px 3px #43adef;
 }
 
