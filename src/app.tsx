@@ -494,6 +494,7 @@ class App extends React.Component {
       let data = {
         username: username,
         password: password,
+        user_agent: navigator.userAgent
       };
       let jsoned = JSON.stringify(data);
 

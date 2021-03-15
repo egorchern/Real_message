@@ -16,7 +16,7 @@ process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
 app.set("trust proxy", true);
 
 
-let dev_mode = false;
+let dev_mode = true;
 
 // if dev mode enabled, fetch database connection string from the connection_string.txt file.
 if (dev_mode === true) {
@@ -49,8 +49,34 @@ const generateAuthToken = () => {
     return crypto.randomBytes(80).toString('hex');
 }
 
-function delete_redundant_auth_token(username, ip){
+function delete_redundant_auth_token(username, ip, user_agent) {
+    return new Promise(resolve => {
+        let auth_token;
+        client.query(`
+        SELECT authtoken
+        FROM authtokens
+        WHERE username='${username}' AND ip='${ip}' AND useragent='${user_agent}';
+        `).then(res => {
+            
+            if(res.rows.length > 0){
+                auth_token = res.rows[0].authtoken
+            }
+            
+            
+            client.query(`
+            DELETE FROM authtokens
+            WHERE username='${username}' AND ip='${ip}' AND useragent='${user_agent}';
+            `).then(res => {
+                
+                resolve(auth_token);
+            })
+        })
+            
+            
     
+    })
+    
+
 }
 
 // hash using bcrypt
@@ -180,10 +206,10 @@ function get_tokens() {
     })
 }
 
-function insert_auth_token(username, auth_token, ip) {
+function insert_auth_token(username, auth_token, ip, user_agent) {
     client.query(`
-  INSERT INTO authtokens(username, authtoken, ip)
-  VALUES('${username}', '${auth_token}', '${ip}');
+  INSERT INTO authtokens(username, authtoken, ip, useragent)
+  VALUES('${username}', '${auth_token}', '${ip}', '${user_agent}');
   `)
 }
 
@@ -281,18 +307,30 @@ get_username_controller = (req, res) => {
 login_controller = (req, res) => {
     let username = req.body.username;
     let password = req.body.password;
-    console.log(username, password);
+
     do_credentials_match(username, password).then(result => {
         if (result === true) {
             let client_ip = request_ip.getClientIp(req);
-            console.log(client_ip);
+            let user_agent = req.body.user_agent;
             let auth_token = generateAuthToken();
-            auth_tokens[auth_token] = username;
 
-            // Setting the auth token in cookies
-            res.cookie('Auth_token', auth_token, { maxAge: 725760000, expires: 725760000 });
-            insert_auth_token(username, auth_token, client_ip);
-            res.send({ code: 1 });
+            auth_tokens[auth_token] = username;
+            let deleted_token;
+            
+            delete_redundant_auth_token(username, client_ip, user_agent).then(result => {
+                deleted_token = result;
+                console.log(deleted_token);
+                if(deleted_token != undefined){
+                    delete auth_tokens[deleted_token];
+                    console.log(auth_tokens);
+                }
+                // Setting the auth token in cookies
+                res.cookie('Auth_token', auth_token, { maxAge: 725760000, expires: 725760000 });
+                insert_auth_token(username, auth_token, client_ip, user_agent);
+                res.send({ code: 1 });
+            });
+            
+            
         }
         else {
             res.send({ code: 2 })

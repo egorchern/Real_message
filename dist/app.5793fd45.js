@@ -44003,7 +44003,8 @@ function (_super) {
       if (username != "" && password != "") {
         var data = {
           username: username,
-          password: password
+          password: password,
+          user_agent: navigator.userAgent
         };
         var jsoned = JSON.stringify(data); // codes: 1 - successful login, 2 - credentials not found
 
@@ -44168,7 +44169,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55372" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50692" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
