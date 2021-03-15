@@ -42689,7 +42689,13 @@ module.exports = "/new_message_sound_effect.7aacf723.mp3";
 module.exports = {
   "new_message_sound_effect": require("./new_message_sound_effect.mp3")
 };
-},{"./new_message_sound_effect.mp3":"assets/new_message_sound_effect.mp3"}],"../node_modules/tslib/tslib.es6.js":[function(require,module,exports) {
+},{"./new_message_sound_effect.mp3":"assets/new_message_sound_effect.mp3"}],"assets/log_out_icon.svg":[function(require,module,exports) {
+module.exports = "/log_out_icon.ae20eabb.svg";
+},{}],"assets/*.svg":[function(require,module,exports) {
+module.exports = {
+  "log_out_icon": require("./log_out_icon.svg")
+};
+},{"./log_out_icon.svg":"assets/log_out_icon.svg"}],"../node_modules/tslib/tslib.es6.js":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -43489,9 +43495,12 @@ var howler_1 = require("howler");
 
 var __mp3_1 = __importDefault(require("./assets/*.mp3"));
 
+var __svg_1 = __importDefault(require("./assets/*.svg"));
+
 var react_slidedown_1 = require("react-slidedown");
 
 var root = document.querySelector("#root");
+console.log(__svg_1.default);
 var socket;
 var sound_enabled = true;
 
@@ -43544,10 +43553,30 @@ function (_super) {
     return /*#__PURE__*/React.createElement("div", {
       className: "log_out_button",
       onClick: this.handle_click
-    }, /*#__PURE__*/React.createElement("span", null, "Log out"));
+    }, /*#__PURE__*/React.createElement("img", {
+      src: __svg_1.default.log_out_icon
+    }), /*#__PURE__*/React.createElement("span", null, "Log out"));
   };
 
   return Log_out_button;
+}(React.Component);
+
+var Side_panel =
+/** @class */
+function (_super) {
+  __extends(Side_panel, _super);
+
+  function Side_panel(props) {
+    return _super.call(this, props) || this;
+  }
+
+  Side_panel.prototype.render = function () {
+    return /*#__PURE__*/React.createElement("div", {
+      className: "side_panel"
+    }, /*#__PURE__*/React.createElement(Log_out_button, null));
+  };
+
+  return Side_panel;
 }(React.Component);
 
 var Message =
@@ -43716,7 +43745,7 @@ function (_super) {
 
     return /*#__PURE__*/React.createElement("div", {
       className: "conversation_container"
-    }, /*#__PURE__*/React.createElement(Log_out_button, null), /*#__PURE__*/React.createElement("div", {
+    }, /*#__PURE__*/React.createElement(Side_panel, null), /*#__PURE__*/React.createElement("div", {
       className: "messages_container"
     }, this.markup), /*#__PURE__*/React.createElement(New_message_menu, {
       send_new_message: this.props.send_new_message
@@ -44141,7 +44170,7 @@ function main() {
 }
 
 main();
-},{"react":"../node_modules/react/index.js","react-dom":"../node_modules/react-dom/index.js","socket.io/client-dist/socket.io":"../node_modules/socket.io/client-dist/socket.io.js","howler":"../node_modules/howler/dist/howler.js","./assets/*.mp3":"assets/*.mp3","react-slidedown":"../node_modules/react-slidedown/lib/slidedown.js"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"react":"../node_modules/react/index.js","react-dom":"../node_modules/react-dom/index.js","socket.io/client-dist/socket.io":"../node_modules/socket.io/client-dist/socket.io.js","howler":"../node_modules/howler/dist/howler.js","./assets/*.mp3":"assets/*.mp3","./assets/*.svg":"assets/*.svg","react-slidedown":"../node_modules/react-slidedown/lib/slidedown.js"}],"../node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;

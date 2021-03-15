@@ -1,18 +1,20 @@
 @import url("https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400;1,700&family=Roboto:ital,wght@0,400;0,500;1,400;1,500&display=swap");
 $username_font_size: calc(1rem + 0.1vw);
 $message_text_font_size: calc(1rem + 0.05vw);
-$username_color: hsl(240, 100%, 60%);
-$log_out_button_font_size: calc(1.5rem + 0.2vw);
+$username_color: hsl(240, 100%, 65%);
+$log_out_button_font_size: calc(1.25rem + 0.2vw);
+$primary_hover_color: hsl(203, 84%, 60%);
 @media (max-width: 768.01px) {
   :root {
     --conversation_container_width: 95%;
     --name_select_container_width: 100%;
     --submit_button_width: auto;
     --alert_width: 95%;
-    --log_out_button_position: static;
+    
   }
-  .log_out_button{
-    margin-bottom: 10px;
+  .side_panel{
+
+    flex-direction: row;
   }
   
 }
@@ -23,12 +25,13 @@ $log_out_button_font_size: calc(1.5rem + 0.2vw);
     --name_select_container_width: 80%;
     --submit_button_width: 30%;
     --alert_width: auto;
-    --log_out_button_position: fixed;
+    
   }
-  .log_out_button{
-    position:fixed;
-    top: 15px;
-    left: 20px;
+  .side_panel{
+    flex-direction: column;
+    position: fixed;
+    height: 100%;
+    left:0;
   }
 }
 
@@ -220,12 +223,29 @@ body,
   }
 }
 
-.log_out_button{
+.side_panel{
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
+.log_out_button{
+  
   cursor: pointer;
-  display: inline;
-  transition: transform 0.4s;
+  display: inline-flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  transition: box-shadow 0.3s;
+  padding: 8px;
+  img{
+    max-width: 35px;
+    min-width: 20px;
+    width: 5vw;
+  }
   span{
+    margin-left: 5px;
     font-size: $log_out_button_font_size;
     color: $username_color;
     font-weight: bolder;
@@ -234,7 +254,7 @@ body,
 }
 
 .log_out_button:hover{
-  transform: scale(1.4);
+  box-shadow: 0px 0px 5px 3px $primary_hover_color;
 }
 
 .alert_message{

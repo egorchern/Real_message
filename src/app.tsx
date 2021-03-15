@@ -3,11 +3,12 @@ import {render} from "react-dom";
 import {io} from "socket.io/client-dist/socket.io";
 import {Howl} from "howler";
 import assets from "./assets/*.mp3";
+import svg_assets from "./assets/*.svg";
 import {SlideDown} from "react-slidedown";
 import json from "body-parser/lib/types/json";
 import {isElementAccessExpression} from "typescript";
 let root = document.querySelector("#root");
-
+console.log (svg_assets);
 let socket;
 let sound_enabled = true;
 
@@ -43,6 +44,8 @@ function log_out(){
   window.location.reload();
 }
 
+
+
 class Log_out_button extends React.Component{
   constructor(props){
     super(props);
@@ -55,9 +58,30 @@ class Log_out_button extends React.Component{
   render(){
     return (
       <div className="log_out_button" onClick={this.handle_click}>
-        <span>Log out</span>
+        <img src={svg_assets.log_out_icon}>
+        </img>
+        <span>
+          Log out
+        </span>
       </div>
     )
+  }
+}
+
+class Side_panel extends React.Component{
+  constructor(props){
+    super(props);
+
+  }
+  render(){
+    return(
+      <div className="side_panel">
+        <Log_out_button>
+
+        </Log_out_button>
+      </div>
+    )
+    
   }
 }
 
@@ -190,9 +214,9 @@ class Conversation_container extends React.Component {
 
     return (
       <div className="conversation_container">
-        <Log_out_button>
-          
-        </Log_out_button>
+        <Side_panel>
+
+        </Side_panel>
         <div className="messages_container">{this.markup}</div>
         <New_message_menu
           send_new_message={this.props.send_new_message}
