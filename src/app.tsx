@@ -47,24 +47,63 @@ function log_out(){
 class Users_button extends React.Component{
   constructor(props){
     super(props);
+
+    this.state = {
+      users: [],
+      display_users: false
+    }
+    
+    socket.on("logged_in_users", data => {
+      let logged_in_users_json = data;
+      this.setState({
+        users: JSON.parse(logged_in_users_json)
+      })
+    })
+    socket.emit("request_logged_in_users");
+    
   }
   handle_click = () => {
-
-  }
-  componentDidMount(){
-    socket.on("logged_in_users", data => {
-      let logged_in_users = JSON.parse(data);
-      console.log(logged_in_users);
+    this.setState({
+      display_users: !this.state.display_users
     })
   }
+
   render(){
+    let users_markup;
+    if(this.state.display_users === true){
+      users_markup = this.state.users.map((username, index) => {
+        return (
+          <div className="user_container" key={index}>
+            <svg xmlns="http://www.w3.org/2000/svg" className="user_avatar" viewBox="0 0 16 16">
+              <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+            </svg>
+            <span>{username}</span>
+          </div>
+        )
+      })
+    }
     return (
-      <div className="users_button" onClick={this.handle_click}>
-        <img src={svg_assets.users_icon}>
-        </img>
-        <span>
-          Current users
-        </span>
+      <div id="users_button" onClick={this.handle_click}>
+        <div className="flex_direction_row">
+          <img src={svg_assets.users_icon}>
+          </img>
+          <span>
+            Current users
+          </span>
+        </div>
+        
+        <SlideDown className="my_slide_down">
+          {
+            this.state.display_users === true ?
+              
+              <div className="users_container">
+                {users_markup}
+              </div>
+              
+              
+            : null
+          }
+        </SlideDown>
       </div>
     )
   }

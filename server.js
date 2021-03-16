@@ -383,6 +383,9 @@ async function main() {
             logged_in_users.push(username);
             console.log(logged_in_users);
             io.emit("logged_in_users", JSON.stringify(logged_in_users));
+            socket.on("request_logged_in_users", data => {
+                socket.emit("logged_in_users", JSON.stringify(logged_in_users));
+            })
             let json_messages = JSON.stringify(messages);
             socket.on("get_all_messages", data => {
                 socket.emit("all_messages", json_messages);

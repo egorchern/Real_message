@@ -291,6 +291,39 @@ body,
   transform: scale(1.4);
 }
 
+.users_container {
+  padding: 2px;
+}
+
+#users_button {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.user_container {
+  width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  flex-direction: row;
+  margin-top: 2px;
+}
+.user_container span {
+  flex-grow: 1;
+  text-align: center;
+  color: black !important;
+}
+
+.user_avatar {
+  max-width: 35px;
+  min-width: 20px;
+  width: 5vw;
+  fill: #4d4dff;
+}
+
 .my_slide_down {
   width: 100%;
 }

@@ -43545,25 +43545,57 @@ function (_super) {
   function Users_button(props) {
     var _this = _super.call(this, props) || this;
 
-    _this.handle_click = function () {};
+    _this.handle_click = function () {
+      _this.setState({
+        display_users: !_this.state.display_users
+      });
+    };
 
+    _this.state = {
+      users: [],
+      display_users: false
+    };
+    socket.on("logged_in_users", function (data) {
+      var logged_in_users_json = data;
+
+      _this.setState({
+        users: JSON.parse(logged_in_users_json)
+      });
+    });
+    socket.emit("request_logged_in_users");
     return _this;
   }
 
-  Users_button.prototype.componentDidMount = function () {
-    socket.on("logged_in_users", function (data) {
-      var logged_in_users = JSON.parse(data);
-      console.log(logged_in_users);
-    });
-  };
-
   Users_button.prototype.render = function () {
+    var users_markup;
+
+    if (this.state.display_users === true) {
+      users_markup = this.state.users.map(function (username, index) {
+        return /*#__PURE__*/React.createElement("div", {
+          className: "user_container",
+          key: index
+        }, /*#__PURE__*/React.createElement("svg", {
+          xmlns: "http://www.w3.org/2000/svg",
+          className: "user_avatar",
+          viewBox: "0 0 16 16"
+        }, /*#__PURE__*/React.createElement("path", {
+          d: "M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"
+        })), /*#__PURE__*/React.createElement("span", null, username));
+      });
+    }
+
     return /*#__PURE__*/React.createElement("div", {
-      className: "users_button",
+      id: "users_button",
       onClick: this.handle_click
+    }, /*#__PURE__*/React.createElement("div", {
+      className: "flex_direction_row"
     }, /*#__PURE__*/React.createElement("img", {
       src: __svg_1.default.users_icon
-    }), /*#__PURE__*/React.createElement("span", null, "Current users"));
+    }), /*#__PURE__*/React.createElement("span", null, "Current users")), /*#__PURE__*/React.createElement(react_slidedown_1.SlideDown, {
+      className: "my_slide_down"
+    }, this.state.display_users === true ? /*#__PURE__*/React.createElement("div", {
+      className: "users_container"
+    }, users_markup) : null));
   };
 
   return Users_button;
@@ -44244,7 +44276,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "62299" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "49291" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
