@@ -16,7 +16,7 @@ process.env["NODE_TLS_REJECT_UNAUTHORIZED"] = 0;
 app.set("trust proxy", true);
 
 
-let dev_mode = true;
+let dev_mode = false;
 
 // if dev mode enabled, fetch database connection string from the connection_string.txt file.
 if (dev_mode === true) {
